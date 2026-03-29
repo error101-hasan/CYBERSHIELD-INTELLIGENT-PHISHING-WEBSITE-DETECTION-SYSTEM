@@ -4,3 +4,5 @@ joblib
 python-whois
 flask
 flask-sqlalchemy
+gunicorn
+psycopg2-binary
