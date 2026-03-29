@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>CyberShield - Phishing Detection</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  
+  .stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .stat-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+  }
+  
+  .stat-card.phishing {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+  
+  .stat-card.legitimate {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+  
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+  }
+  
+  .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+  
+  .stat-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    opacity: 0.85;
+    transition: transform 0.3s ease;
+  }
+  
+  .stat-card:hover .stat-icon {
+    transform: scale(1.2) rotate(5deg);
+  }
+  
+  .result-summary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    border-radius: 10px;
+    color: white;
+    margin: 1rem 0;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .result-summary:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  }
+  
+  .result-summary.phishing {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+  
+  .result-summary.legitimate {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+  
+  .result-verdict {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 1rem 0;
+  }
+  
+  .confidence-bar {
+    width: 100%;
+    height: 30px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 15px;
+    overflow: hidden;
+    margin: 1rem 0;
+  }
+  
+  .confidence-fill {
+    height: 100%;
+    background: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-weight: bold;
+    transition: width 0.5s ease;
+  }
+  
+  .history-table {
+    width: 100%;
+    margin-top: 1.5rem;
+    border-collapse: collapse;
+  }
+  
+  .history-table th, .history-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .history-table th {
+    background-color: #667eea;
+    color: white;
+  }
+  
+  .history-table tr:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+  }
+  
+  .badge.phishing {
+    background-color: #f5576c;
+    color: white;
+  }
+  
+  .badge.legitimate {
+    background-color: #00f2fe;
+    color: #333;
+  }
+  
+  /* Add zoom effect to all cards from style.css */
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+  }
+</style>
+</head>
+
+<body class="dark">
+
+<div class="theme-toggle">
+  <label class="switch">
+    <span class="emoji-dark">🌙</span>
+    <input type="checkbox" id="toggleTheme">
+    <span class="slider"></span>
+    <span class="emoji-light">☀️</span>
+  </label>
+</div>
+
+<div class="container">
+  <div class="header-top">
+    <a href="/" class="home-link">
+      <i class="fa-solid fa-home"></i> Back to Home
+    </a>
+  </div>
+  <h1>
+    <i class="fa-solid fa-shield-halved"></i> CyberShield - Phishing Detection
+  </h1>
+
+  <form method="post">
+    <input type="text" name="url" placeholder="Enter website URL" required>
+    <button>
+      <i class="fa-solid fa-magnifying-glass"></i> Scan Website
+    </button>
+  </form>
+
+  <!-- SCANNING ANIMATION -->
+  <div id="scanner" class="scanner">
+    <p id="scan-step">Initializing scanner...</p>
+    <div class="scan-bar">
+      <div class="scan-fill" id="scanFill"></div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS DASHBOARD -->
+  {% if stats %}
+  <div class="stats-overview">
+    <h2>
+      <i class="fa-solid fa-chart-bar"></i> Scanning Statistics
+    </h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <i class="fa-solid fa-chart-column stat-icon"></i>
+        <div class="stat-label">Total Scans</div>
+        <div class="stat-number">{{ stats.total_scans }}</div>
+      </div>
+      <div class="stat-card phishing">
+        <i class="fa-solid fa-fire stat-icon"></i>
+        <div class="stat-label">Phishing Detected</div>
+        <div class="stat-number">{{ stats.phishing_count }}</div>
+      </div>
+      <div class="stat-card legitimate">
+        <i class="fa-solid fa-shield-check stat-icon"></i>
+        <div class="stat-label">Legitimate Sites</div>
+        <div class="stat-number">{{ stats.legitimate_count }}</div>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+        <i class="fa-solid fa-chart-line stat-icon"></i>
+        <div class="stat-label">Detection Rate</div>
+        <div class="stat-number">{{ stats.detection_rate }}%</div>
+      </div>
+    </div>
+    <div class="stats-grid" style="margin-top: 1rem;">
+      <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <i class="fa-solid fa-calendar-day stat-icon"></i>
+        <div class="stat-label">Today's Scans</div>
+        <div class="stat-number">{{ stats.today_scans }}</div>
+      </div>
+      <div class="stat-card phishing">
+        <i class="fa-solid fa-exclamation-circle stat-icon"></i>
+        <div class="stat-label">Today's Phishing</div>
+        <div class="stat-number">{{ stats.today_phishing }}</div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- RESULT SUMMARY -->
+  {% if result %}
+  <div id="resultBox" class="grid hidden">
+    
+    <!-- OVERALL VERDICT -->
+    <div class="result-summary {% if result.is_phishing %}phishing{% else %}legitimate{% endif %}">
+      <h2>
+        {% if result.is_phishing %}
+        <i class="fa-solid fa-exclamation-triangle"></i> PHISHING DETECTED
+        {% else %}
+        <i class="fa-solid fa-check-circle"></i> LEGITIMATE WEBSITE
+        {% endif %}
+      </h2>
+      <p><b>URL:</b> {{ result.url }}</p>
+      <p style="margin-top: 1rem;">
+        <b>Overall Confidence:</b>
+      </p>
+      <div class="confidence-bar">
+        <div class="confidence-fill" style="width: {{ result.confidence }}%">
+          {{ result.confidence }}%
+        </div>
+      </div>
+      <p>Risk Score: <b>{{ result.risk_score }}/100</b></p>
+    </div>
+
+    <!-- RULE BASED -->
+    <div class="card">
+      <h2>
+        <i class="fa-solid fa-gear"></i> Rule Based Detection
+      </h2>
+      <p>Risk Score: {{ result.rule_score }} / 100</p>
+      <div class="bar">
+        <div class="fill" style="width: {{ result.rule_score }}%"></div>
+      </div>
+      <h3>Detection Reasons</h3>
+      <ul>
+        {% for r in result.reasons %}
+        <li>{{ r }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- MACHINE LEARNING -->
+    <div class="card">
+      <h2>
+        <i class="fa-solid fa-brain"></i> Machine Learning Analysis
+      </h2>
+      <p>Prediction: <b>{{ result.ml_prediction }}</b></p>
+      <p>Confidence: <b>{{ result.ml_confidence }}%</b></p>
+      <canvas id="mlChart"></canvas>
+    </div>
+
+    <!-- THREAT -->
+    <div class="card">
+      <h2>
+        <i class="fa-solid fa-triangle-exclamation"></i> Threat Analysis
+      </h2>
+      <p>Overall Risk Level</p>
+      <div class="bar">
+        <div class="fill danger" style="width: {{ result.risk_score }}%"></div>
+      </div>
+      <p>
+        <b>Risk Score:</b> {{ result.risk_score }}/100
+        {% if result.risk_score >= 80 %}
+        <span style="color: #f5576c;"> (CRITICAL)</span>
+        {% elif result.risk_score >= 60 %}
+        <span style="color: #fa709a;"> (HIGH)</span>
+        {% elif result.risk_score >= 40 %}
+        <span style="color: #fee140;"> (MEDIUM)</span>
+        {% else %}
+        <span style="color: #00f2fe;"> (LOW)</span>
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- WEBSITE INFO -->
+    <div class="card">
+      <h2>
+        <i class="fa-solid fa-globe"></i> Website Information
+      </h2>
+      <p><b>Domain:</b> {{ result.url }}</p>
+      <p><b>IP Address:</b> {{ result.ip }}</p>
+      <p><b>Domain Age:</b> 
+        {% if result.age == 0 or result.age == -1 %}
+        <span style="color: #ff6b6b;">Unknown or Very New</span>
+        {% elif result.age < 30 %}
+        <span style="color: #fa709a;">{{ result.age }} days (NEW - Suspicious)</span>
+        {% elif result.age < 365 %}
+        <span style="color: #fee140;">{{ result.age }} days (~{{ (result.age / 30)|int }} months)</span>
+        {% else %}
+        <span style="color: #00f2fe;">{{ result.age }} days (~{{ (result.age / 365)|int }} years)</span>
+        {% endif %}
+      </p>
+    </div>
+
+  </div>
+  {% endif %}
+
+  <!-- SCAN HISTORY -->
+  {% if history %}
+  <div class="card" style="margin-top: 2rem;">
+    <h2>
+      <i class="fa-solid fa-history"></i> Recent Scan History
+    </h2>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th>Result</th>
+          <th>Risk Score</th>
+          <th>Confidence</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for scan in history %}
+        <tr>
+          <td style="max-width: 300px; word-break: break-word;">{{ scan.url }}</td>
+          <td>
+            <span class="badge {% if scan.result == 'PHISHING' %}phishing{% else %}legitimate{% endif %}">
+              {{ scan.result }}
+            </span>
+          </td>
+          <td>{{ scan.risk_score }}</td>
+          <td>{{ scan.confidence }}%</td>
+          <td>{{ scan.timestamp }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <footer>CyberShield| ABUL FAHAD HASAN</footer>
+
+</div>
+
+{% if result %}
+<script type="text/javascript">
+  // Store values in data attributes to avoid linter confusion
+  document.addEventListener('DOMContentLoaded', function() {
+    var mlConfidence = {{ result.ml_confidence }};
+    var isPhishing = {{ 'true' if result.is_phishing else 'false' }};
+    var ctx = document.getElementById("mlChart");
+    if (ctx) {
+      // Green (#006400) for legitimate, Red for phishing
+      var confidenceColor = isPhishing ? "#f5576c" : "#006400";
+      var remainingColor = "#1f3b4d";
+      
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ["Confidence", "Remaining"],
+          datasets: [{
+            data: [mlConfidence, 100 - mlConfidence],
+            backgroundColor: [confidenceColor, remainingColor]
+          }]
+        },
+        options: { cutout: "70%" }
+      });
+    }
+  });
+</script>
+{% endif %}
+
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.getElementById("toggleTheme");
+    if (toggle) {
+      toggle.addEventListener("change", function() {
+        if (document.body.classList.contains("dark")) {
+          document.body.classList.remove("dark");
+          document.body.classList.add("light");
+        } else {
+          document.body.classList.remove("light");
+          document.body.classList.add("dark");
+        }
+      });
+    }
+
+    const form = document.querySelector("form");
+    const scanner = document.getElementById("scanner");
+    const resultBox = document.getElementById("resultBox");
+    const stepText = document.getElementById("scan-step");
+    const fill = document.getElementById("scanFill");
+
+    if (form) {
+      form.addEventListener("submit", function() {
+        if (scanner) scanner.style.display = "block";
+        if (resultBox) resultBox.classList.add("hidden");
+      });
+    }
+
+    if (resultBox) {
+      const steps = [
+        "Scanning URL...",
+        "Checking Domain Reputation...",
+        "Running Machine Learning Model...",
+        "Detecting Look-Alike Domains..."
+      ];
+      let i = 0;
+      const interval = setInterval(function() {
+        if (stepText) stepText.innerText = steps[i];
+        if (fill) fill.style.width = ((i + 1) / steps.length) * 100 + "%";
+        i++;
+        if (i === steps.length) {
+          clearInterval(interval);
+          setTimeout(function() {
+            if (scanner) scanner.style.display = "none";
+            if (resultBox) resultBox.classList.remove("hidden");
+          }, 800);
+        }
+      }, 900);
+    }
+  });
+</script>
+
+</body>
+</html>

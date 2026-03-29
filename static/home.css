@@ -1,0 +1,170 @@
+/* ===== BODY ===== */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ===== HERO ===== */
+.hero {
+  background: black;
+  height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* ===== CENTER LOGO ===== */
+.top-bar {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: white;
+  z-index: 10;
+}
+
+.top-bar h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.top-bar p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+/* ===== ABOUT BUTTON ===== */
+.about-btn {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  z-index: 9999;
+
+  padding: 10px 20px;
+  border-radius: 25px;
+
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  cursor: pointer;
+}
+
+.about-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* ===== SLIDES ===== */
+.slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+/* ===== OVERLAY ===== */
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  background: linear-gradient(
+    135deg,
+    rgba(15,42,68,0.85),
+    rgba(26,31,77,0.85)
+  );
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== FEATURE BOX ===== */
+.feature-box {
+  padding: 30px 40px;
+  border-radius: 15px;
+
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.1);
+
+  text-align: center;
+  color: white;
+}
+
+.feature-box i {
+  font-size: 45px;
+  margin-bottom: 15px;
+  color: #3da5ff;
+}
+
+.feature-box h2 {
+  font-size: 2.2rem;
+}
+
+.feature-box p {
+  opacity: 0.8;
+}
+
+/* ===== CTA ===== */
+.cta {
+  position: absolute;
+  bottom: 40px;
+  width: 100%;
+  text-align: center;
+  z-index: 20;
+}
+
+.cta a {
+  padding: 14px 35px;
+  border-radius: 30px;
+  color: white;
+  text-decoration: none;
+
+  background: linear-gradient(270deg, #667eea, #764ba2, #43e97b);
+  background-size: 400% 400%;
+
+  transition: transform 0.3s ease;
+}
+
+/* 🔥 Animate on hover */
+.cta a:hover {
+  animation: gradientMove 3s ease infinite;
+  transform: scale(1.05);
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.cta a:hover {
+  box-shadow: 0 0 20px rgba(102,126,234,0.7);
+}
+.slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.slide.active {
+  opacity: 1;
+  z-index: 1;
+}
