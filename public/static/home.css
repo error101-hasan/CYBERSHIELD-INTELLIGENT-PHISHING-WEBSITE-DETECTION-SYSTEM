@@ -24,24 +24,14 @@ body {
   width: min(92vw, 720px);
 }
 
-.eyebrow {
-  margin: 0 0 0.55rem;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #74e3ff;
-}
-
 .top-bar h1 {
   margin: 0;
-  font-size: clamp(2rem, 5vw, 3.8rem);
-  line-height: 1.05;
+  font-size: 2rem;
 }
 
 .top-bar p {
-  margin: 0.35rem 0 0;
-  font-size: 1rem;
+  margin: 0;
+  font-size: 0.95rem;
   color: #ccc;
 }
 
@@ -77,9 +67,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
   color: white;
-  width: min(88vw, 460px);
+  width: min(88vw, 420px);
   box-sizing: border-box;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
 }
 
 .feature-box i {
@@ -113,14 +102,13 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 16px 36px;
+  padding: 14px 35px;
   border-radius: 30px;
   color: white;
   text-decoration: none;
   background: linear-gradient(270deg, #667eea, #764ba2, #43e97b);
   background-size: 400% 400%;
   transition: transform 0.3s ease;
-  font-weight: 700;
 }
 
 .cta a:hover {
@@ -133,26 +121,6 @@ body {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
-}
-
-@media (min-width: 1200px) {
-  .top-bar {
-    top: 28px;
-    width: min(92vw, 900px);
-  }
-
-  .feature-box {
-    width: min(42vw, 520px);
-    padding: 36px 42px;
-  }
-
-  .feature-box h2 {
-    font-size: 2.5rem;
-  }
-
-  .feature-box p {
-    font-size: 1.06rem;
-  }
 }
 
 @media (max-width: 768px) {
@@ -201,9 +169,5 @@ body {
 
   .feature-box {
     width: 100%;
-  }
-
-  .eyebrow {
-    letter-spacing: 0.16em;
   }
 }

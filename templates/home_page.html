@@ -1,95 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CyberShield</title>
-
-  <!-- CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
-
-  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-
 <body>
+  <div class="hero">
+    <div class="top-bar">
+      <p class="eyebrow">Realtime Protection</p>
+      <h1><i class="fa-solid fa-shield-halved"></i> CyberShield</h1>
+      <p>Advanced Phishing Detection System</p>
+    </div>
 
-<!-- HERO -->
-<div class="hero">
-
-  <!-- Center Logo -->
-  <div class="top-bar">
-    <h1><i class="fa-solid fa-shield-halved"></i> CyberShield</h1>
-    <p>Advanced Phishing Detection System</p>
-  </div>
-
-  <!-- SLIDE 1 -->
-  <div class="slide active" style="background-image: url('{{ url_for('static', filename='HD-wallpaper-hacker-hood-code-programming.jpg') }}');">
-    <div class="overlay">
-      <div class="feature-box">
-        <i class="fa-solid fa-bolt"></i>
-        <h2>Lightning Fast</h2>
-        <p>Instant scan results</p>
+    <div class="slide active" style="background-image: url('{{ url_for('static', filename='HD-wallpaper-hacker-hood-code-programming.jpg') }}');">
+      <div class="overlay">
+        <div class="feature-box">
+          <i class="fa-solid fa-bolt"></i>
+          <h2>Lightning Fast</h2>
+          <p>Instant scan results on desktop and mobile.</p>
+        </div>
       </div>
+    </div>
+
+    <div class="slide" style="background-image: url('{{ url_for('static', filename='anarchy-anonymous-binary-code-wallpaper-preview.jpg') }}');">
+      <div class="overlay">
+        <div class="feature-box">
+          <i class="fa-solid fa-brain"></i>
+          <h2>AI Powered</h2>
+          <p>Model-backed phishing detection with clear risk signals.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" style="background-image: url('{{ url_for('static', filename='thumb-1920-1108171.png') }}');">
+      <div class="overlay">
+        <div class="feature-box">
+          <i class="fa-solid fa-lock"></i>
+          <h2>Secure</h2>
+          <p>Scan suspicious links before you trust them.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide" style="background-image: url('{{ url_for('static', filename='HD-Hacker-Desktop-Wallpaper.jpg') }}');">
+      <div class="overlay">
+        <div class="feature-box">
+          <i class="fa-solid fa-chart-line"></i>
+          <h2>Analytics</h2>
+          <p>Review recent scans and watch your threat trends.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <a href="/scanner">
+        <i class="fa-solid fa-play"></i> Start Scanning
+      </a>
     </div>
   </div>
 
-  <!-- SLIDE 2 -->
-  <div class="slide" style="background-image: url('{{ url_for('static', filename='anarchy-anonymous-binary-code-wallpaper-preview.jpg') }}');">
-    <div class="overlay">
-      <div class="feature-box">
-        <i class="fa-solid fa-brain"></i>
-        <h2>AI Powered</h2>
-        <p>97.60% Accuracy</p>
-      </div>
-    </div>
-  </div>
+  <script>
+    let index = 0;
+    const slides = document.querySelectorAll(".slide");
 
-  <!-- SLIDE 3 -->
-  <div class="slide" style="background-image: url('{{ url_for('static', filename='thumb-1920-1108171.png') }}');">
-    <div class="overlay">
-      <div class="feature-box">
-        <i class="fa-solid fa-lock"></i>
-        <h2>Secure</h2>
-        <p>Your data is safe</p>
-      </div>
-    </div>
-  </div>
+    function showSlide(i) {
+      slides[index].classList.remove("active");
+      index = (i + slides.length) % slides.length;
+      slides[index].classList.add("active");
+    }
 
-  <!-- SLIDE 4 -->
-  <div class="slide" style="background-image: url('{{ url_for('static', filename='HD-Hacker-Desktop-Wallpaper.jpg') }}');">
-    <div class="overlay">
-      <div class="feature-box">
-        <i class="fa-solid fa-chart-line"></i>
-        <h2>Analytics</h2>
-        <p>Track all scans</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- CTA -->
-  <div class="cta">
-    <a href="/scanner">
-      <i class="fa-solid fa-play"></i> Start Scanning
-    </a>
-  </div>
-
-</div>
-
-<!-- SCRIPT -->
-<script>
-let index = 0;
-const slides = document.querySelectorAll(".slide");
-
-function showSlide(i){
-  slides[index].classList.remove("active");  // remove only current
-  index = (i + slides.length) % slides.length;
-  slides[index].classList.add("active");     // add next
-}
-
-setInterval(() => {
-  showSlide(index + 1);
-}, 4000);
-</script>
-
+    setInterval(() => {
+      showSlide(index + 1);
+    }, 4000);
+  </script>
 </body>
 </html>

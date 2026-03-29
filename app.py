@@ -19,6 +19,9 @@ def get_database_uri() -> str:
     if sqlite_path:
         return f"sqlite:///{sqlite_path}"
 
+    if os.getenv("VERCEL"):
+        return "sqlite:////tmp/phishing_scans.db"
+
     return f"sqlite:///{BASE_DIR / 'instance' / 'phishing_scans.db'}"
 
 
